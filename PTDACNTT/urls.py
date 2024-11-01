@@ -16,7 +16,18 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from benhvienmat import views 
+from benhvienmat.views import GetBacSiAPI, HoSoBenhAnAPI, BenhNhanAPI
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    path('viewsAPIBacSi/',GetBacSiAPI.as_view(),name="bac-si-list"),
+    path('viewsAPIBenhNhan/',BenhNhanAPI.as_view(),name="benh-nhan-list"),
+    path('viewsAPIHoSo/',HoSoBenhAnAPI.as_view(),name="ho-so-list"),
+    
+    path('viewsAPIBacSi/<int:maBacSi>/', GetBacSiAPI.as_view(), name='bac-si-detail'),  # PUT, DELETE
+    path('viewsAPIBenhNhan/<int:maBenhNhan>/', BenhNhanAPI.as_view(), name='benh-nhan-detail'),  # PUT, DELETE
+    path('viewsAPIHoSo/<int:maBenhAn>/', HoSoBenhAnAPI.as_view(), name='ho-so-detail'),  # PUT, DELETE
+
 ]
