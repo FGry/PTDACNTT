@@ -14,6 +14,8 @@ class BacSiSerializer (serializers.ModelSerializer):
         fields = '__all__' 
 
 class HoSoBenhAnSerializer(serializers.ModelSerializer):
+    hoTenBenhNhan = serializers.CharField(source='benhNhan.hoTenBenhNhan', read_only=True)
+
     class Meta:
         model = HoSoBenhAn
         fields = '__all__' 
