@@ -40,7 +40,9 @@ INSTALLED_APPS = [
 
     'api',
     'rest_framework',
-
+    'rest_framework.authtoken',
+    'Manager',
+    'rest_framework_simplejwt',
 ]
 
 MIDDLEWARE = [
@@ -51,7 +53,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    #tạo phương thức xác thực tự động
+    'Manager.middlewares.JWTAuthenticationMiddleware',
 ]
+
+# Đảm bảo rằng bạn cấu hình đúng CORS nếu frontend và backend khác domain
+CORS_ALLOW_ALL_ORIGINS = True 
 
 ROOT_URLCONF = 'hospital.urls'
 
@@ -78,19 +85,19 @@ WSGI_APPLICATION = 'hospital.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',
-    # }
-
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'hospital',        # Tên cơ sở dữ liệu
-        'USER': 'root',           # Tên người dùng MySQL
-        'PASSWORD': 'nguyenphuoc',              # Mật khẩu cho tài khoản MySQL
-        'HOST': '127.0.0.1',                 # Địa chỉ của máy chủ (có thể là 'localhost' hoặc địa chỉ IP)
-        'PORT': '3306',                      # Cổng MySQL, thường là 3306
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
+
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'hospital',        # Tên cơ sở dữ liệu
+    #     'USER': 'root',           # Tên người dùng MySQL
+    #     'PASSWORD': 'nguyenphuoc',              # Mật khẩu cho tài khoản MySQL
+    #     'HOST': '127.0.0.1',                 # Địa chỉ của máy chủ (có thể là 'localhost' hoặc địa chỉ IP)
+    #     'PORT': '3306',                      # Cổng MySQL, thường là 3306
+    # }
 }
 
 
@@ -134,3 +141,24 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+
+# settings.py
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+   
+}
+
+
+# Cấu hình SimpleJWT (Optional, có thể thay đổi giá trị theo nhu cầu)
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),  # Thời gian sống của Access Token
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),    # Thời gian sống của Refresh Token
+    'ROTATE_REFRESH_TOKENS': True,  # Có thay thế Refresh Token mỗi khi cấp mới không
+    'BLACKLIST_AFTER_ROTATION': True,  # Hủy Refresh Token đã được sử dụng
+}
