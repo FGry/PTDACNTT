@@ -236,50 +236,221 @@ def ho_so_benh_an_theo_ngay(request):
 
 
 
+# def danh_sach_hoso_view(request):
+
+#     # Lấy ngày từ tham số query
+#     order = request.GET.get('order', 'desc')  # Mặc định là 'desc' nếu không có order
+
+#     # Nếu có tham số ngày, gọi API để lấy dữ liệu
+#     if order:
+#         # Thay đổi đường dẫn API theo đúng URL của bạn
+#         api_url = f'http://127.0.0.1:8888/api/viewsAPIHoSo/?order={order}'
+#         response = requests.get(api_url)
+
+#         # Kiểm tra nếu API trả về dữ liệu thành công
+#         if response.status_code == 200:
+#             ho_so_benh_an = response.json()  # Lấy dữ liệu JSON từ response
+#         else:
+#             ho_so_benh_an = []  # Nếu không có dữ liệu, để danh sách rỗng
+#     else:
+#         ho_so_benh_an = []
+
+#     # Render dữ liệu vào template
+#     return render(request, 'ho_so_benh_an.html', {'ho_so_benh_an': ho_so_benh_an, 'order': order})
+
+
+
 def danh_sach_hoso_view(request):
-
     # Lấy ngày từ tham số query
-    order = request.GET.get('order', 'desc')  # Mặc định là 'desc' nếu không có order
+    ngay = request.GET.get('ngay')
 
-    # Nếu có tham số ngày, gọi API để lấy dữ liệu
-    if order:
+    if ngay:
         # Thay đổi đường dẫn API theo đúng URL của bạn
-        api_url = f'http://127.0.0.1:8888/api/viewsAPIHoSo/?order={order}'
+        api_url = f'http://127.0.0.1:8888/api/viewsAPIHoSo/?ngay={ngay}'
         response = requests.get(api_url)
 
-        # Kiểm tra nếu API trả về dữ liệu thành công
         if response.status_code == 200:
-            ho_so_benh_an = response.json()  # Lấy dữ liệu JSON từ response
+            # Nếu API trả về thành công, lấy dữ liệu JSON
+            ho_so_benh_an_date = response.json()
         else:
-            ho_so_benh_an = []  # Nếu không có dữ liệu, để danh sách rỗng
+            # Nếu API gặp lỗi, trả về thông báo lỗi
+            return Response(
+                {'error': 'Không thể lấy dữ liệu từ API', 'status_code': response.status_code},
+                status=500
+            )
     else:
-        ho_so_benh_an = []
+        # Nếu không có tham số ngày, trả về thông báo lỗi
+        return Response({'error': 'Vui lòng cung cấp tham số ngày'}, status=400)
 
-    # Render dữ liệu vào template
-    return render(request, 'ho_so_benh_an.html', {'ho_so_benh_an': ho_so_benh_an, 'order': order})
+    # Trả về dữ liệu JSON
+    return Response(ho_so_benh_an_date)
+
+
 
 from django.utils.dateparse import parse_date
-# khoang ngay
+# khoang ngay // cai o duoi đổ dữ liệu vào templates de test cai thứ 2 ở dưới trả về dữ liệu
 
+# def ho_so_benh_an_theo_khoang_ngay(request):
+#     ngay_bat_dau = request.GET.get('ngay_bat_dau')
+#     ngay_ket_thuc = request.GET.get('ngay_ket_thuc')
+#     ho_so_benh_an = []
+
+#     if ngay_bat_dau and ngay_ket_thuc:
+#         # Chuyển đổi chuỗi sang đối tượng datetime
+#         ngay_bat_dau = parse_date(ngay_bat_dau)
+#         ngay_ket_thuc = parse_date(ngay_ket_thuc)
+
+#         # Lọc hồ sơ theo khoảng thời gian
+#         ho_so_benh_an = HoSoBenhAn.objects.filter(
+#             thoiGianKham__date__gte=ngay_bat_dau,
+#             thoiGianKham__date__lte=ngay_ket_thuc
+#         )
+
+#     context = {
+#         'ho_so_benh_an': ho_so_benh_an,
+#         'ngay_bat_dau': ngay_bat_dau,
+#         'ngay_ket_thuc': ngay_ket_thuc
+#     }
+#     return render(request, 'ho_so_khoang_ngay.html', context)
+
+
+from rest_framework.decorators import api_view
+@api_view(['GET'])
 def ho_so_benh_an_theo_khoang_ngay(request):
     ngay_bat_dau = request.GET.get('ngay_bat_dau')
     ngay_ket_thuc = request.GET.get('ngay_ket_thuc')
-    ho_so_benh_an = []
 
-    if ngay_bat_dau and ngay_ket_thuc:
-        # Chuyển đổi chuỗi sang đối tượng datetime
-        ngay_bat_dau = parse_date(ngay_bat_dau)
-        ngay_ket_thuc = parse_date(ngay_ket_thuc)
+    try:
+        if ngay_bat_dau and ngay_ket_thuc:
+            # Chuyển đổi chuỗi sang đối tượng datetime
+            ngay_bat_dau = parse_date(ngay_bat_dau)
+            ngay_ket_thuc = parse_date(ngay_ket_thuc)
 
-        # Lọc hồ sơ theo khoảng thời gian
-        ho_so_benh_an = HoSoBenhAn.objects.filter(
-            thoiGianKham__date__gte=ngay_bat_dau,
-            thoiGianKham__date__lte=ngay_ket_thuc
-        )
+            if ngay_bat_dau and ngay_ket_thuc:
+                # Lọc hồ sơ theo khoảng thời gian
+                ho_so_benh_an = HoSoBenhAn.objects.filter(
+                    thoiGianKham__date__gte=ngay_bat_dau,
+                    thoiGianKham__date__lte=ngay_ket_thuc
+                )
+                # Chuyển dữ liệu thành danh sách JSON
+                data = list(ho_so_benh_an.values())
+            else:
+                return Response({'error': 'Ngày bắt đầu hoặc ngày kết thúc không hợp lệ!'}, status=400)
+        else:
+            return Response({'error': 'Vui lòng cung cấp cả ngày bắt đầu và ngày kết thúc!'}, status=400)
 
-    context = {
-        'ho_so_benh_an': ho_so_benh_an,
-        'ngay_bat_dau': ngay_bat_dau,
-        'ngay_ket_thuc': ngay_ket_thuc
-    }
-    return render(request, 'ho_so_khoang_ngay.html', context)
+    except Exception as e:
+        return Response({'error': str(e)}, status=500)
+
+    # Trả về dữ liệu JSON qua `Response`
+    return Response({'ho_so_benh_an': data})
+
+
+from rest_framework.exceptions import ValidationError
+
+
+
+class DanhSachHosoView(APIView):
+    def get(self, request):
+        # Lấy danh sách hồ sơ từ database
+        danh_sach_hs = BenhNhan.objects.all()
+        
+        # Sử dụng serializer để chuyển đổi dữ liệu thành định dạng JSON
+        serializer = BenhNhanSerializer(danh_sach_hs, many=True)
+        
+        # Trả về dữ liệu dưới dạng JSON
+        return Response({'danh_sach_hs': serializer.data}, status=200)
+
+
+
+
+
+
+class DanhSachBenhAnView(APIView):
+    def get(self, request):
+        # Lấy tất cả các bệnh án
+        benh_an_list = HoSoBenhAn.objects.all().order_by('-thoiGianKham')  # Sắp xếp theo ngày khám mới nhất
+        
+        # Nếu bạn muốn lọc theo số CCCD thì dùng đoạn mã dưới
+        # so_cccd = request.GET.get('so_cccd', None)
+        # if so_cccd:
+        #     benh_an_list = benh_an_list.filter(so_cccd__so_cccd=so_cccd)
+
+        # Serialize dữ liệu để trả về
+        serializer = HoSoBenhAnSerializer(benh_an_list, many=True)
+        return Response({'benh_an': serializer.data}, status=status.HTTP_200_OK)
+    
+    
+class ThemHosoView(APIView):
+    
+    def post(self, request):
+        # In ra dữ liệu nhận được để kiểm tra
+        print("Received data:", request.data)
+
+        # Chuyển dữ liệu từ request thành serializer để kiểm tra tính hợp lệ
+        serializer = HoSoBenhAnSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            # Nếu dữ liệu hợp lệ, lưu bệnh án và trả về phản hồi thành công
+            serializer.save()
+            return Response({'message': 'Thêm bệnh án thành công!'}, status=status.HTTP_201_CREATED)
+        else:
+            # Nếu dữ liệu không hợp lệ, trả về lỗi
+            print("Validation errors:", serializer.errors)
+            raise ValidationError({'errors': serializer.errors})
+
+
+class ThemBenhAnView(APIView):
+# {
+#     "maBenhAn": "BA12345678",
+#     "benhNhan": "1234567890",
+#     "thoiGianKham": "2024-11-23T10:00:00Z",
+#     "trieuChung": "Ho, sốt, đau họng",
+#     "chuanDoan": "Viêm phổi",
+#     "dieuTri": "Uống thuốc kháng sinh"
+# }
+
+    def post(self, request):
+        # Lấy dữ liệu từ request
+        data = request.data
+
+        # Kiểm tra xem bệnh nhân có tồn tại không
+        try:
+            benhnhan = BenhNhan.objects.get(soCCCD=data['soCCCD'])
+        except BenhNhan.DoesNotExist:
+            raise ValidationError("Bệnh nhân không tồn tại!")
+
+        # Kiểm tra nếu mã bệnh án đã tồn tại
+        if HoSoBenhAn.objects.filter(maBenhAn=data['maBenhAn']).exists():
+            return Response({"detail": "Mã bệnh án đã tồn tại!"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Khởi tạo serializer với dữ liệu
+        serializer = HoSoBenhAnSerializer(data=data)
+
+        # Kiểm tra xem serializer có hợp lệ không
+        if serializer.is_valid():
+            # Lưu bệnh án và liên kết với bệnh nhân
+            serializer.save(soCCCD=benhnhan)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class TimKiemCCCDView(APIView):
+    def get(self, request):
+        # Lấy giá trị số CCCD từ tham số truy vấn
+        so_cccd = request.GET.get('soCCCD', None)
+        
+        if so_cccd is None:
+            return Response({'error': 'Vui lòng cung cấp số CCCD.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Lọc bệnh án theo số CCCD của bệnh nhân
+        benh_an_list = HoSoBenhAn.objects.filter(benhNhan__soCCCD=so_cccd).order_by('-thoiGianKham')
+        
+        if not benh_an_list.exists():
+            return Response({'message': 'Không tìm thấy bệnh án nào cho số CCCD này.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Serialize dữ liệu và trả về kết quả
+        serializer = HoSoBenhAnSerializer(benh_an_list, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    

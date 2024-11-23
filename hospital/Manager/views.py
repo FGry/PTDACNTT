@@ -98,8 +98,6 @@ def get_csrf_token(request):
 
 
 
-<<<<<<< HEAD
-
 
 
 class GetAccountsView(APIView):
@@ -114,7 +112,6 @@ class GetAccountsView(APIView):
         admin_accounts = Manager.objects.filter(is_active=True)
         admin_data = ManagerSerializer(admin_accounts, many=True).data
         return Response({'admins': admin_data}, status=200)
-=======
 from .models import BlacklistedToken
 
 
@@ -171,4 +168,4 @@ class TokenRefreshView(APIView):
             }, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": "Invalid refresh token"}, status=status.HTTP_400_BAD_REQUEST)
->>>>>>> b9824494444a13de79d03fe72ca32dba8a3911c1
+

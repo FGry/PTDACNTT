@@ -2,6 +2,8 @@ from django.urls import path
 from .views import BenhNhanAPI, GetBacSiAPI,HoSoBenhAnAPI
 from api import views 
 
+from .views import *
+
 
 urlpatterns = [
 
@@ -21,4 +23,11 @@ urlpatterns = [
 
     # theo khoang ngay
     path('ho_so_khoang_ngay/', views.ho_so_benh_an_theo_khoang_ngay, name='ho_so_benh_an_theo_khoang_ngay'),
+
+    # quang
+    path('hosolist/',DanhSachHosoView.as_view()  , name='danh_sach_hoso'),
+    path('benhanlist/', DanhSachBenhAnView.as_view(), name='benhanlist'),
+    path('addhoso/', ThemHosoView.as_view(), name='them_hoso'),
+    path('addbenhan/',ThemBenhAnView.as_view(), name='them_benh_an'), 
+    path('timkiem/', TimKiemCCCDView.as_view(), name='tim_kiem_cccd'),
 ]
