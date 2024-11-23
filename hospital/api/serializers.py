@@ -1,18 +1,22 @@
 from rest_framework import serializers
-from .models import Patient, MedicalRecord
+from .models import BenhNhan, BacSi,HoSoBenhAn
 
-class PatientSerializer(serializers.ModelSerializer):
+class BenhNhanSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Patient
-        fields = '__all__'
+        model = BenhNhan
+        fields = '__all__' 
 
-class MedicalRecordSerializer(serializers.ModelSerializer):
+class BacSiSerializer (serializers.ModelSerializer):
     class Meta:
-        model = MedicalRecord
-        fields = '__all__'
+        model = BacSi
+        fields = '__all__' 
 
+class HoSoBenhAnSerializer(serializers.ModelSerializer):
+    hoTenBenhNhan = serializers.CharField(source='benhNhan.hoTenBenhNhan', read_only=True)
 
-
+    class Meta:
+        model = HoSoBenhAn
+        fields = '__all__' 
 
 '''
 
