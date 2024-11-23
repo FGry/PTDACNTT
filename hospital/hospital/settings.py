@@ -37,12 +37,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    'hoso',
     'api',
     'rest_framework',
     'rest_framework.authtoken',
     'Manager',
     'rest_framework_simplejwt',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -55,6 +56,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     #tạo phương thức xác thực tự động
     'Manager.middlewares.JWTAuthenticationMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 # Đảm bảo rằng bạn cấu hình đúng CORS nếu frontend và backend khác domain
@@ -147,12 +149,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # settings.py
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+        # Nếu dùng JWT:
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
-   
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',  # Đặt mặc định yêu cầu đăng nhập
+    ],
 }
-
-
 # Cấu hình SimpleJWT (Optional, có thể thay đổi giá trị theo nhu cầu)
 from datetime import timedelta
 

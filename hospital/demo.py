@@ -15,11 +15,11 @@ def decode_jwt(token):
 login_url = "http://127.0.0.1:8888/api/manager/login/"
 
 # Thông tin đăng nhập
-login_data = {
-    "email": "nguyenvanphuoc09112004@gmail.com",
-    "password": "1234"
-}
-
+login_data = [
+    {"email": "nguyenvanphuoc09112004@gmail.com", "password": "1234"},
+    {"email": "quang@gmail.com", "password": "1234"},
+    {"email": "quang1@gmail.com", "password": "1234"}
+]
 # Gửi yêu cầu POST để đăng nhập và lấy token
 response = requests.post(login_url, json=login_data)
 

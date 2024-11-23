@@ -1,13 +1,12 @@
-from django.http import HttpResponse
+
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
-
 from .models import Manager
 from .serializers import ManagerSerializer
-
+from rest_framework.permissions import IsAuthenticated
 
 
 class ManagerProfileView(APIView):
@@ -96,3 +95,21 @@ from django.middleware.csrf import get_token
 def get_csrf_token(request):
     token = get_token(request)
     return JsonResponse({"csrfToken": token})
+
+
+
+
+
+
+class GetAccountsView(APIView):
+    permission_classes = [IsAuthenticated]  # Yêu cầu người dùng phải đăng nhập
+
+    def get(self, request):
+        # Kiểm tra tài khoản hiện tại có is_active không
+        if not request.user.is_active:
+            return Response({'detail': 'Tài khoản của bạn không được kích hoạt.'}, status=403)
+
+        # Lấy danh sách tài khoản admin có is_active = True
+        admin_accounts = Manager.objects.filter(is_active=True)
+        admin_data = ManagerSerializer(admin_accounts, many=True).data
+        return Response({'admins': admin_data}, status=200)
