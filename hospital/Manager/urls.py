@@ -10,5 +10,7 @@ urlpatterns = [
     path('update/', views.UpdateManagerView.as_view(), name='update_Manager'),
     path('login/', views.LoginView.as_view(), name='login_Manager'),
     path('get_csrf/', get_csrf_token),
+    path('logout/', views.LogoutView.as_view(), name='logout'),
+    path('token/refresh/', views.TokenRefreshView.as_view(), name='token_refresh'),
 ]
 
