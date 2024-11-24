@@ -89,19 +89,8 @@ class LoginView(APIView):
 
         
 
-from django.http import JsonResponse
-from django.middleware.csrf import get_token
-
-def get_csrf_token(request):
-    token = get_token(request)
-    return JsonResponse({"csrfToken": token})
-
-
-
-
-
 class GetAccountsView(APIView):
-    permission_classes = [IsAuthenticated]  # Yêu cầu người dùng phải đăng nhập
+   
 
     def get(self, request):
         # Kiểm tra tài khoản hiện tại có is_active không
@@ -112,6 +101,7 @@ class GetAccountsView(APIView):
         admin_accounts = Manager.objects.filter(is_active=True)
         admin_data = ManagerSerializer(admin_accounts, many=True).data
         return Response({'admins': admin_data}, status=200)
+    
 from .models import BlacklistedToken
 
 

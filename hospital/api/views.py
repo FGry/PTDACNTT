@@ -435,7 +435,6 @@ class ThemBenhAnView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
 class TimKiemCCCDView(APIView):
     def get(self, request):
         # Lấy giá trị số CCCD từ tham số truy vấn

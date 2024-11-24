@@ -55,6 +55,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     #tạo phương thức xác thực tự động
     'Manager.middlewares.JWTAuthenticationMiddleware',
+    'Manager.middlewares.DisableCSRFMiddleware',
     'corsheaders.middleware.CorsMiddleware',
 ]
 

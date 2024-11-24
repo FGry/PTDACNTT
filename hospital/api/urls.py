@@ -31,3 +31,4 @@ urlpatterns = [
     path('addbenhan/',ThemBenhAnView.as_view(), name='them_benh_an'), 
     path('timkiem/', TimKiemCCCDView.as_view(), name='tim_kiem_cccd'),
 ]
+

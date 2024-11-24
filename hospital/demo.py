@@ -15,11 +15,10 @@ def decode_jwt(token):
 login_url = "http://127.0.0.1:8888/api/manager/login/"
 
 # Thông tin đăng nhập
-login_data = [
-    {"email": "nguyenvanphuoc09112004@gmail.com", "password": "1234"},
-    {"email": "quang@gmail.com", "password": "1234"},
-    {"email": "quang1@gmail.com", "password": "1234"}
-]
+login_data = {"email": "nguyenvanphuoc09112004@gmail.com", "password": "1234"}
+    # {"email": "quang@gmail.com", "password": "1234"}
+    # {"email": "quang1@gmail.com", "password": "1234"}
+
 # Gửi yêu cầu POST để đăng nhập và lấy token
 response = requests.post(login_url, json=login_data)
 
@@ -38,17 +37,12 @@ else:
 
 import requests
 
-# URL để lấy CSRF token (thường là trang chính hoặc API nào đó)
-csrf_url = "http://127.0.0.1:8888/api/manager/get_csrf/"
 
-# Gửi yêu cầu GET để lấy CSRF token
+
+
 session = requests.Session()  # Sử dụng session để duy trì cookie
-csrf_response = session.get(csrf_url)
 
-# Lấy token từ cookie
-csrf_token = csrf_response.cookies.get('csrftoken')
 
-print("CSRF Token:", csrf_token)
 
 
 # URL để thêm sản phẩm vào giỏ hàng
@@ -61,7 +55,7 @@ post_url = "http://127.0.0.1:8888/api/manager/profile/"
 headers = {
     "Authorization": f"Bearer {access_token}",
     "Content-Type": "application/json",
-    "X-CSRFToken": csrf_token,  # Thêm CSRF token vào đây
+
 }
 
 # # Dữ liệu gửi đến API
