@@ -1,0 +1,16 @@
+.menu ul li{
+    display: inline;
+    line-height: 80px;
+    list-style-type: none;
+    border-radius: 20px;
+}
+.menu ul li{
+    text-decoration: none;
+    color: #00ac4f;
+    font-size: 18px;
+    font-weight: bolder;
+}
+
+.menu ul li:hover{
+    background-color: #F2F3F4;
+}
