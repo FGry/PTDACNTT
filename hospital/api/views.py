@@ -117,7 +117,7 @@ class BenhNhanAPI(APIView):
     
 class HoSoBenhAnAPI(APIView):
 
-    
+
     def get(self, request):
         # Lấy các tham số từ query params
         id = request.query_params.get('id', None)
@@ -193,30 +193,6 @@ class HoSoBenhAnAPI(APIView):
 
 
 from django.utils.dateparse import parse_date
-# khoang ngay // cai o duoi đổ dữ liệu vào templates de test cai thứ 2 ở dưới trả về dữ liệu
-
-# def ho_so_benh_an_theo_khoang_ngay(request):
-#     ngay_bat_dau = request.GET.get('ngay_bat_dau')
-#     ngay_ket_thuc = request.GET.get('ngay_ket_thuc')
-#     ho_so_benh_an = []
-
-#     if ngay_bat_dau and ngay_ket_thuc:
-#         # Chuyển đổi chuỗi sang đối tượng datetime
-#         ngay_bat_dau = parse_date(ngay_bat_dau)
-#         ngay_ket_thuc = parse_date(ngay_ket_thuc)
-
-#         # Lọc hồ sơ theo khoảng thời gian
-#         ho_so_benh_an = HoSoBenhAn.objects.filter(
-#             thoiGianKham__date__gte=ngay_bat_dau,
-#             thoiGianKham__date__lte=ngay_ket_thuc
-#         )
-
-#     context = {
-#         'ho_so_benh_an': ho_so_benh_an,
-#         'ngay_bat_dau': ngay_bat_dau,
-#         'ngay_ket_thuc': ngay_ket_thuc
-#     }
-#     return render(request, 'ho_so_khoang_ngay.html', context)
 
 
 from rest_framework.decorators import api_view
@@ -255,19 +231,19 @@ from rest_framework.exceptions import ValidationError
 
 
 
-class DanhSachBenhAnView(APIView):
-    def get(self, request):
-        # Lấy tất cả các bệnh án
-        benh_an_list = HoSoBenhAn.objects.all().order_by('-thoiGianKham')  # Sắp xếp theo ngày khám mới nhất
+# class DanhSachBenhAnView(APIView):
+#     def get(self, request):
+#         # Lấy tất cả các bệnh án
+#         benh_an_list = HoSoBenhAn.objects.all().order_by('-thoiGianKham')  # Sắp xếp theo ngày khám mới nhất
         
-        # Nếu bạn muốn lọc theo số CCCD thì dùng đoạn mã dưới
-        # so_cccd = request.GET.get('so_cccd', None)
-        # if so_cccd:
-        #     benh_an_list = benh_an_list.filter(so_cccd__so_cccd=so_cccd)
+#         # Nếu bạn muốn lọc theo số CCCD thì dùng đoạn mã dưới
+#         # so_cccd = request.GET.get('so_cccd', None)
+#         # if so_cccd:
+#         #     benh_an_list = benh_an_list.filter(so_cccd__so_cccd=so_cccd)
 
-        # Serialize dữ liệu để trả về
-        serializer = HoSoBenhAnSerializer(benh_an_list, many=True)
-        return Response({'benh_an': serializer.data}, status=status.HTTP_200_OK)
+#         # Serialize dữ liệu để trả về
+#         serializer = HoSoBenhAnSerializer(benh_an_list, many=True)
+#         return Response({'benh_an': serializer.data}, status=status.HTTP_200_OK)
     
     
 class ThemHosoView(APIView):

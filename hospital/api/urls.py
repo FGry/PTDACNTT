@@ -24,7 +24,7 @@ urlpatterns = [
 
     # Danh sách hồ sơ và bệnh án
     # path('hosolist/', views.DanhSachHosoView.as_view(), name='danh_sach_hoso'),
-    path('benhanlist/', views.DanhSachBenhAnView.as_view(), name='benhanlist'),
+    # path('benhanlist/', views.DanhSachBenhAnView.as_view(), name='benhanlist'),
     
     # Thêm hồ sơ và bệnh án
     path('addhoso/', views.ThemHosoView.as_view(), name='them_hoso'),
