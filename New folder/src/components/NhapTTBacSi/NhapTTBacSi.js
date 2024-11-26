@@ -3,20 +3,16 @@ import styles from './NhapTTBacSi.module.css';
 
 const NhapTTBacSi = () => {
     const [bacSi, setBacSi] = useState({
-        name: '',
-        dob: '',
-        gender: '',
-        phone: '',
-        address: '',
-        cIN: '',
+        soCCCD: '',
+        hoTenBacSi: '',
+        tuoi: '',
+        gioiTinh: '',
+        soDienThoai: '',
+        diaChi: '',
     });
     const [hienThi, setHienThi] = useState(false);
     const [thongTinHienThi, setThongTinHienThi] = useState(null);
-    const [errors, setErrors] = useState({
-        dob: '',
-        phone: '',
-        cIN: ''
-    });
+    let access_token = localStorage.getItem('access_token');
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -25,78 +21,67 @@ const NhapTTBacSi = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const phoneRegex = /^0\d{9}$/;
-        const cINRegex = /^0\d{11}$/;
-        const today = new Date();
-        const dob = new Date(bacSi.dob);
-        let errorMessages = {};
+        const soDienThoaiRegex = /^0\d{9}$/;
+        const soCCCDRegex = /^0\d{11}$/;
 
-        if (dob >= today) {
-            errorMessages.dob = "Ngày sinh không hợp lệ";
+        if (!soDienThoaiRegex.test(bacSi.soDienThoai)) {
+            alert("Số điện thoại không hợp lệ! (Yêu cầu 10 ký tự bắt đầu bằng 0)");
+            return;
         }
-        if (!phoneRegex.test(bacSi.phone)) {
-            errorMessages.phone = "Số điện thoại không hợp lệ! (Yêu cầu 10 ký tự bắt đầu bằng 0)";
-        }
-        if (!cINRegex.test(bacSi.cIN)) {
-            errorMessages.cIN = "Căn cước công dân không hợp lệ! (Yêu cầu 12 ký tự bắt đầu bằng 0)";
-        }
-
-        // Nếu có lỗi, set lại state errorMessages
-        if (Object.keys(errorMessages).length > 0) {
-            setErrors(errorMessages);
+        if (!soCCCDRegex.test(bacSi.soCCCD)) {
+            alert("Căn cước công dân không hợp lệ! (Yêu cầu 12 ký tự bắt đầu bằng 0)");
             return;
         }
 
         setThongTinHienThi(bacSi);
         setHienThi(true);
-        setErrors({}); // Reset lỗi khi form hợp lệ
+    };
+
+    const handleConfirm = async () => {
+        try {
+            // Chuyển đổi 'tuoi' từ string thành integer
+            const response = await fetch('http://127.0.0.1:8888/api/viewsAPIBacSi/', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${access_token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    soCCCD: bacSi.soCCCD,
+                    hoTenBacSi: bacSi.hoTenBacSi,
+                    tuoi: parseInt(bacSi.tuoi),  // Chuyển đổi tuổi thành integer
+                    gioiTinh: bacSi.gioiTinh,
+                    soDienThoai: bacSi.soDienThoai,
+                    diaChi: bacSi.diaChi
+                }),
+            });
+            if (response.ok) {
+                alert("Thông tin bác sĩ đã được lưu thành công!");
+                setBacSi({
+                    hoTenBacSi: '',
+                    tuoi: '',
+                    gioiTinh: '',
+                    soDienThoai: '',
+                    diaChi: '',
+                    soCCCD: '',
+                });
+                setHienThi(false);
+            } else {
+                alert("Lỗi khi lưu thông tin bác sĩ.");
+            }
+        } catch (error) {
+            alert("Đã có lỗi xảy ra: " + error.message);
+        }
     };
 
     const closeHienThi = () => {
         setHienThi(!hienThi);
     };
 
-    const handleConfirm = async () => {
-        // setLoading(true); // Start loading
-
-        // // Send data to the server using fetch or axios
-        // try {
-        //     const response = await fetch('http://yourapiendpoint.com/api/benhnhan', {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-Type': 'application/json',
-        //         },
-        //         body: JSON.stringify(benhNhan), // Send the data in the request body
-        //     });
-
-        //     if (response.ok) {
-        //         const result = await response.json();
-        //         setSuccessMessage("Dữ liệu đã được lưu thành công!");
-        //         setThongTinHienThi(null); // Clear the displayed info
-        //         setBenhNhan({
-        //             name: '',
-        //             dob: '',
-        //             gender: '',
-        //             ethnic: '',
-        //             phone: '',
-        //             address: '',
-        //             cIN: '',
-        //             hIN: '',
-        //         }); // Reset the form
-        //     } else {
-        //         setSuccessMessage("Có lỗi xảy ra. Vui lòng thử lại.");
-        //     }
-        // } catch (error) {
-        //     setSuccessMessage("Có lỗi xảy ra. Vui lòng thử lại.");
-        // } finally {
-        //     setLoading(false); // Stop loading
-        // }
-    };
-
     return (
         <div className={styles.bigdiv}>
             <div className={styles.cont}>
-                <h2 style={{ textAlign: 'center', paddingBottom:"20px" }}>Nhập thông tin bác sĩ</h2>
+                <h2 style={{ textAlign: 'center', paddingBottom: "20px" }}>Nhập thông tin bác sĩ</h2>
                 <form onSubmit={handleSubmit}>
                     <div>
                         <table>
@@ -104,45 +89,41 @@ const NhapTTBacSi = () => {
                                 <tr>
                                     <td><label>Họ và tên:</label></td>
                                     <td>
-                                        <input className={styles.in} type="text" name="name" value={bacSi.name} onChange={handleChange} required />
+                                        <input className={styles.in} type="text" name="hoTenBacSi" value={bacSi.hoTenBacSi} onChange={handleChange} required />
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td><label>Ngày tháng năm sinh:</label></td>
+                                    <td><label>Tuổi:</label></td>
                                     <td>
-                                        <input type="date" name='dob' value={bacSi.dob} onChange={handleChange} required />
-                                        {errors.dob && <span className={styles.error}>{errors.dob}</span>}
+                                        <input className={styles.in} type="number" name="tuoi" value={bacSi.tuoi} onChange={handleChange} required />
                                     </td>
                                 </tr>
                                 <tr>
                                     <td><label>Giới Tính:</label></td>
                                     <td>
-                                        <select name="gender" value={bacSi.gender} onChange={handleChange} required>
+                                        <select name="gioiTinh" value={bacSi.gioiTinh} onChange={handleChange} required>
                                             <option value="">Chọn giới tính</option>
-                                            <option value="nam">Nam</option>
-                                            <option value="nữ">Nữ</option>
-                                            <option value="khác">Khác</option>
+                                            <option value="M">Nam</option>
+                                            <option value="F">Nữ</option>
                                         </select>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td><label>Số Điện Thoại:</label></td>
                                     <td>
-                                        <input className={styles.in} type="tel" name="phone" value={bacSi.phone} onChange={handleChange} required />
-                                        {errors.phone && <span className={styles.error}>{errors.phone}</span>}
+                                        <input className={styles.in} type="tel" name="soDienThoai" value={bacSi.soDienThoai} onChange={handleChange} required />
                                     </td>
                                 </tr>
                                 <tr>
                                     <td><label>Địa Chỉ:</label></td>
                                     <td>
-                                        <input className={styles.in} type="text" name="address" value={bacSi.address} onChange={handleChange} required />
+                                        <input className={styles.in} type="text" name="diaChi" value={bacSi.diaChi} onChange={handleChange} required />
                                     </td>
                                 </tr>
                                 <tr>
                                     <td><label>Số Căn Cước Công Dân:</label></td>
                                     <td>
-                                        <input className={styles.in} type="text" name="cIN" value={bacSi.cIN} onChange={handleChange} required maxLength={12} />
-                                        {errors.cIN && <span className={styles.error}>{errors.cIN}</span>}
+                                        <input className={styles.in} type="text" name="soCCCD" value={bacSi.soCCCD} onChange={handleChange} required maxLength={12} />
                                     </td>
                                 </tr>
                             </tbody>
@@ -158,15 +139,13 @@ const NhapTTBacSi = () => {
                                 <span className={styles.close_btn} onClick={closeHienThi}>&times;</span>
                             </div>
                             <div className={styles.center_content}>
-                                <p><strong>Họ và tên:</strong> {thongTinHienThi.name}</p>
-                                <p><strong>Ngày tháng năm sinh:</strong> {thongTinHienThi.dob}</p>
-                                <p><strong>Giới Tính:</strong> {thongTinHienThi.gender}</p>
-                                <p><strong>Số Điện Thoại:</strong> {thongTinHienThi.phone}</p>
-                                <p><strong>Địa Chỉ:</strong> {thongTinHienThi.address}</p>
-                            </div>
-                            <div className={styles.btn_con}>
-                                <button className={styles.btn} onClick={closeHienThi}>Hủy</button>
-                                <button className={styles.btn} onClick={handleConfirm}>Xác nhận</button>
+                                <p><strong>Họ và tên:</strong> {thongTinHienThi.hoTenBacSi}</p>
+                                <p><strong>Tuổi:</strong> {thongTinHienThi.tuoi}</p>
+                                <p><strong>Giới Tính:</strong> {thongTinHienThi.gioiTinh === 'M' ? 'Nam' : 'Nữ'}</p>
+                                <p><strong>Số Điện Thoại:</strong> {thongTinHienThi.soDienThoai}</p>
+                                <p><strong>Địa Chỉ:</strong> {thongTinHienThi.diaChi}</p>
+                                <p><strong>Số Căn Cước Công Dân:</strong> {thongTinHienThi.soCCCD}</p>
+                                <button onClick={handleConfirm} className={styles.confirm_btn}>Xác Nhận</button>
                             </div>
                         </div>
                     </div>
