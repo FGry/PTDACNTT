@@ -14,8 +14,8 @@ import requests #pip install requests , thu vien tra ve api tren http
 
 class BacSiAPI(APIView):
 
-    def get(self,request, id = None):
-        if (id is not None):  # Nếu có id, lấy đối tượng cụ thể
+    def get(self, request, id=None):
+        if id is not None:  # Nếu có id, lấy đối tượng cụ thể
             try:
                 bac_si = BacSi.objects.get(id=id)
                 serializer = BacSiSerializer(bac_si)
@@ -24,15 +24,21 @@ class BacSiAPI(APIView):
                 return Response(status=status.HTTP_404_NOT_FOUND)
         else:  # Nếu không có id, trả về tất cả
             bacsi = BacSi.objects.all()
-            serializer = BacSiSerializer(bacsi,many = True)
-        return Response(serializer.data,status=status.HTTP_200_OK)
+            serializer = BacSiSerializer(bacsi, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)  # Thêm return ở đây
+
 
     def post(self, request):
         serializer = BacSiSerializer(data=request.data)
         if serializer.is_valid():
+            # Kiểm tra thêm nếu cần
+            # Ví dụ: nếu muốn kiểm tra trùng `soCCCD`:
+            if BacSi.objects.filter(soCCCD=request.data.get('soCCCD')).exists():
+                return Response({"error": "Số CCCD đã tồn tại!"}, status=status.HTTP_400_BAD_REQUEST)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     
     # update Data
     def put(self, request, id):
