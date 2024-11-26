@@ -18,6 +18,7 @@ def verify_jwt(token):
         # Kiểm tra xem token có hết hạn hay không
         exp_timestamp = decoded_token.get('exp')
         if exp_timestamp and exp_timestamp < datetime.now().timestamp():
+            print(";<<<<")
             return None  # Token đã hết hạn
 
         # Nếu token hợp lệ, trả về thông tin của người dùng
@@ -47,7 +48,7 @@ class JWTAuthenticationMiddleware:
         # Lấy token từ header Authorization
         print("say hi !")
         auth_header = request.headers.get('Authorization')
-
+        print(auth_header)
         if auth_header:
             token = auth_header.split(' ')[1]  # Lấy token từ "Bearer <token>"
             print(token)

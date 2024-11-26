@@ -20,7 +20,7 @@ class HoSoBenhAnSerializer(serializers.ModelSerializer):
     
     def validate_benhNhan(self, value):
         # Kiểm tra xem bệnh nhân có tồn tại trong cơ sở dữ liệu hay không
-        if not BenhNhan.objects.filter(maBenhNhan=value.maBenhNhan).exists():
+        if not BenhNhan.objects.filter(id=value.id).exists():
             raise serializers.ValidationError("Bệnh nhân không tồn tại.")
         return value 
 

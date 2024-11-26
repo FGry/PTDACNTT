@@ -12,23 +12,18 @@ import requests #pip install requests , thu vien tra ve api tren http
 
 # render ra view
 
-class GetBacSiAPI(APIView):
-    def get_queryset(self):
-        # Điều này đảm bảo mỗi request đều gọi lại database,
-        # đảm bảo dữ liệu không bị cache và luôn phản ánh chính xác dữ liệu trong cơ sở dữ liệu hiện tại.
-        return BacSi.objects.all()
+class BacSiAPI(APIView):
 
-
-    def get(self,request, maBacSi = None):
-        if (maBacSi is not None):  # Nếu có id, lấy đối tượng cụ thể
+    def get(self,request, id = None):
+        if (id is not None):  # Nếu có id, lấy đối tượng cụ thể
             try:
-                bac_si = BacSi.objects.get(maBacSi=maBacSi)
+                bac_si = BacSi.objects.get(id=id)
                 serializer = BacSiSerializer(bac_si)
                 return Response(serializer.data, status=status.HTTP_200_OK)
             except BacSi.DoesNotExist:
                 return Response(status=status.HTTP_404_NOT_FOUND)
         else:  # Nếu không có id, trả về tất cả
-            bacsi = self.get_queryset()
+            bacsi = BacSi.objects.all()
             serializer = BacSiSerializer(bacsi,many = True)
         return Response(serializer.data,status=status.HTTP_200_OK)
 
@@ -40,9 +35,9 @@ class GetBacSiAPI(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     # update Data
-    def put(self, request, maBacSi):
+    def put(self, request, id):
         try:
-            bac_si = BacSi.objects.get(maBacSi=maBacSi)
+            bac_si = BacSi.objects.get(id=id)
         except BacSi.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -53,9 +48,9 @@ class GetBacSiAPI(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     #delete data
-    def delete(self, request, maBacSi):
+    def delete(self, request, id):
         try:
-            bac_si = BacSi.objects.get(maBacSi=maBacSi)
+            bac_si = BacSi.objects.get(id=id)
         except BacSi.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -64,24 +59,21 @@ class GetBacSiAPI(APIView):
     
 
 class BenhNhanAPI(APIView):
-    # get info
-    def get_queryset(self):
-        return BenhNhan.objects.all()
 
     # get all infor
     def get(self, request):
 
-        maBenhNhan = request.query_params.get('maBenhNhan', None)
+        id = request.query_params.get('id', None)
 
-        if maBenhNhan is not None:  # Nếu có id, lấy đối tượng cụ thể
+        if id is not None:  # Nếu có id, lấy đối tượng cụ thể
             try:
-                benh_nhan = BenhNhan.objects.get(maBenhNhan=maBenhNhan)
+                benh_nhan = BenhNhan.objects.get(id=id)
                 serializer = BenhNhanSerializer(benh_nhan)
                 return Response(serializer.data, status=status.HTTP_200_OK)
             except BenhNhan.DoesNotExist:
                 return Response(status=status.HTTP_404_NOT_FOUND)
         else:  # Nếu không có id, trả về tất cả
-            queryset = self.get_queryset()
+            queryset = BenhNhan.objects.all()
             serializer = BenhNhanSerializer(queryset, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -94,9 +86,9 @@ class BenhNhanAPI(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     # update Data
-    def put(self, request, maBenhNhan):
+    def put(self, request, id):
         try:
-            benh_nhan = BenhNhan.objects.get(maBenhNhan=maBenhNhan)
+            benh_nhan = BenhNhan.objects.get(id=id)
         except BenhNhan.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -107,60 +99,36 @@ class BenhNhanAPI(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     #delete data
-    def delete(self, request, maBenhNhan):
+    def delete(self, request, id):
         try:
-            benh_nhan = BenhNhan.objects.get(maBenhNhan=maBenhNhan)
+            benh_nhan = BenhNhan.objects.get(id=id)
+            benh_nhan.delete()
+            return Response({'message': 'successful deleted'}, status=status.HTTP_200_OK)
         except BenhNhan.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-
-        benh_nhan.delete()
-        return Response("Da xoa thanh cong",status=status.HTTP_204_NO_CONTENT)
     
-
-
 
     
 class HoSoBenhAnAPI(APIView):
 
-    def get_queryset(self):
-        return HoSoBenhAn.objects.all()
-
+    
     def get(self, request):
+        # Lấy các tham số từ query params
+        id = request.query_params.get('id', None)
+        ngay = request.query_params.get('ngay', None)
         
-        maBenhAn = request.query_params.get('maBenhAn', None)
-        maBenhNhan = request.query_params.get('maBenhNhan', None)
-        ngay = request.query_params.get('ngay', None)  
-
-        if maBenhAn is not None:  # Nếu có id, lấy đối tượng cụ thể
+        if id is not None:  # Nếu có id, lấy hồ sơ bệnh án hoặc bệnh nhân cụ thể
             try:
-                ho_so = HoSoBenhAn.objects.get(maBenhAn=maBenhAn)
+                ho_so = HoSoBenhAn.objects.get(id=id)
                 serializer = HoSoBenhAnSerializer(ho_so)
                 return Response(serializer.data, status=status.HTTP_200_OK)
             except HoSoBenhAn.DoesNotExist:
-                return Response(status=status.HTTP_404_NOT_FOUND)            
-        elif maBenhNhan is not None:  # Nếu có id, lấy đối tượng cụ thể 
+                return Response({"error": "Không tìm thấy hồ sơ bệnh án"}, status=status.HTTP_404_NOT_FOUND)
+        elif ngay is not None:  # Nếu có ngày, lọc hồ sơ theo ngày khám
             try:
-                # Lấy thông tin bệnh nhân
-                benh_nhan = BenhNhan.objects.get(maBenhNhan=maBenhNhan)
-                
-                # Lấy tất cả hồ sơ bệnh án của bệnh nhân này
-                ho_so = HoSoBenhAn.objects.filter(benhNhan=benh_nhan)
-                
-                # Sử dụng serializer để trả về thông tin bệnh nhân và hồ sơ bệnh án
-                benh_nhan_data = {
-                    "maBenhNhan": benh_nhan.maBenhNhan,
-                    "hoTenBenhNhan": benh_nhan.hoTenBenhNhan,
-                    "hoSoBenhAn": HoSoBenhAnSerializer(ho_so, many=True).data  # Danh sách hồ sơ bệnh án
-                }
-                
-                return Response(benh_nhan_data, status=status.HTTP_200_OK)
-            except BenhNhan.DoesNotExist:
-                return Response({"error": "Không tìm thấy bệnh nhân"}, status=status.HTTP_404_NOT_FOUND)
-        elif ngay is not None:
-            try:
-                # Định dạng ngày:  format 'YYYY-MM-DD'
+                # Định dạng ngày: 'YYYY-MM-DD'
                 ngay_kham = datetime.strptime(ngay, '%Y-%m-%d').date()
-                print(ngay_kham) #ktra ngay trong terminal
+                
                 # Lọc hồ sơ theo ngày khám
                 queryset = HoSoBenhAn.objects.filter(thoiGianKham__date=ngay_kham)
                 
@@ -170,9 +138,11 @@ class HoSoBenhAnAPI(APIView):
                 return Response({"error": "Định dạng ngày không hợp lệ. Định dạng đúng: YYYY-MM-DD"}, status=status.HTTP_400_BAD_REQUEST)
 
         else:  
-            order = request.query_params.get('order', None) # Lấy tham số 'order' từ query params
-            queryset = self.get_queryset()
-            
+            # Trường hợp không có id và ngày, lấy tất cả hồ sơ bệnh án
+            order = request.query_params.get('order', None)  # Lấy tham số 'order' từ query params
+            queryset = HoSoBenhAn.objects.all()
+
+            # Sắp xếp theo tham số 'order'
             if order == 'asc':
                 queryset = queryset.order_by('thoiGianKham')  # Tăng dần
             elif order == 'desc':
@@ -190,9 +160,9 @@ class HoSoBenhAnAPI(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     # update Data
-    def put(self, request, maBenhAn):
+    def put(self, request, id):
         try:
-            ho_so = HoSoBenhAn.objects.get(maBenhAn=maBenhAn)
+            ho_so = HoSoBenhAn.objects.get(id=id)
         except HoSoBenhAn.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -203,9 +173,9 @@ class HoSoBenhAnAPI(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     #delete data
-    def delete(self, request, maBenhAn):
+    def delete(self, request, id):
         try:
-            ho_so = HoSoBenhAn.objects.get(maBenhAn=maBenhAn)
+            ho_so = HoSoBenhAn.objects.get(id=id)
         except HoSoBenhAn.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -213,77 +183,6 @@ class HoSoBenhAnAPI(APIView):
         return Response("Da xoa thanh cong",status=status.HTTP_204_NO_CONTENT)
 
 
-def ho_so_benh_an_theo_ngay(request):
-    # Lấy ngày từ tham số query
-    ngay = request.GET.get('ngay')
-
-    # Nếu có tham số ngày, gọi API để lấy dữ liệu
-    if ngay:
-        # Thay đổi đường dẫn API theo đúng URL của bạn
-        api_url = f'http://127.0.0.1:8888/api/viewsAPIHoSo/?ngay={ngay}'
-        response = requests.get(api_url)
-
-        # Kiểm tra nếu API trả về dữ liệu thành công
-        if response.status_code == 200:
-            ho_so_benh_an_date = response.json()  # Lấy dữ liệu JSON từ response
-        else:
-            ho_so_benh_an_date = []  # Nếu không có dữ liệu, để danh sách rỗng
-    else:
-        ho_so_benh_an_date = []
-
-    # Render dữ liệu vào template
-    return render(request, 'ho_so_benh_an_date.html', {'ho_so_benh_an_date': ho_so_benh_an_date, 'ngay': ngay})
-
-
-
-# def danh_sach_hoso_view(request):
-
-#     # Lấy ngày từ tham số query
-#     order = request.GET.get('order', 'desc')  # Mặc định là 'desc' nếu không có order
-
-#     # Nếu có tham số ngày, gọi API để lấy dữ liệu
-#     if order:
-#         # Thay đổi đường dẫn API theo đúng URL của bạn
-#         api_url = f'http://127.0.0.1:8888/api/viewsAPIHoSo/?order={order}'
-#         response = requests.get(api_url)
-
-#         # Kiểm tra nếu API trả về dữ liệu thành công
-#         if response.status_code == 200:
-#             ho_so_benh_an = response.json()  # Lấy dữ liệu JSON từ response
-#         else:
-#             ho_so_benh_an = []  # Nếu không có dữ liệu, để danh sách rỗng
-#     else:
-#         ho_so_benh_an = []
-
-#     # Render dữ liệu vào template
-#     return render(request, 'ho_so_benh_an.html', {'ho_so_benh_an': ho_so_benh_an, 'order': order})
-
-
-
-def danh_sach_hoso_view(request):
-    # Lấy ngày từ tham số query
-    ngay = request.GET.get('ngay')
-
-    if ngay:
-        # Thay đổi đường dẫn API theo đúng URL của bạn
-        api_url = f'http://127.0.0.1:8888/api/viewsAPIHoSo/?ngay={ngay}'
-        response = requests.get(api_url)
-
-        if response.status_code == 200:
-            # Nếu API trả về thành công, lấy dữ liệu JSON
-            ho_so_benh_an_date = response.json()
-        else:
-            # Nếu API gặp lỗi, trả về thông báo lỗi
-            return Response(
-                {'error': 'Không thể lấy dữ liệu từ API', 'status_code': response.status_code},
-                status=500
-            )
-    else:
-        # Nếu không có tham số ngày, trả về thông báo lỗi
-        return Response({'error': 'Vui lòng cung cấp tham số ngày'}, status=400)
-
-    # Trả về dữ liệu JSON
-    return Response(ho_so_benh_an_date)
 
 
 
@@ -350,22 +249,6 @@ from rest_framework.exceptions import ValidationError
 
 
 
-class DanhSachHosoView(APIView):
-    def get(self, request):
-        # Lấy danh sách hồ sơ từ database
-        danh_sach_hs = BenhNhan.objects.all()
-        
-        # Sử dụng serializer để chuyển đổi dữ liệu thành định dạng JSON
-        serializer = BenhNhanSerializer(danh_sach_hs, many=True)
-        
-        # Trả về dữ liệu dưới dạng JSON
-        return Response({'danh_sach_hs': serializer.data}, status=200)
-
-
-
-
-
-
 class DanhSachBenhAnView(APIView):
     def get(self, request):
         # Lấy tất cả các bệnh án
@@ -402,7 +285,7 @@ class ThemHosoView(APIView):
 
 class ThemBenhAnView(APIView):
 # {
-#     "maBenhAn": "BA12345678",
+#     "id": "BA12345678",
 #     "benhNhan": "1234567890",
 #     "thoiGianKham": "2024-11-23T10:00:00Z",
 #     "trieuChung": "Ho, sốt, đau họng",
@@ -421,7 +304,7 @@ class ThemBenhAnView(APIView):
             raise ValidationError("Bệnh nhân không tồn tại!")
 
         # Kiểm tra nếu mã bệnh án đã tồn tại
-        if HoSoBenhAn.objects.filter(maBenhAn=data['maBenhAn']).exists():
+        if HoSoBenhAn.objects.filter(id=data['id']).exists():
             return Response({"detail": "Mã bệnh án đã tồn tại!"}, status=status.HTTP_400_BAD_REQUEST)
 
         # Khởi tạo serializer với dữ liệu

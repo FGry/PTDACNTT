@@ -46,21 +46,34 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
     #tạo phương thức xác thực tự động
     'Manager.middlewares.JWTAuthenticationMiddleware',
     'Manager.middlewares.DisableCSRFMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
 ]
+
+
+
+
+
+
+
 
 # Đảm bảo rằng bạn cấu hình đúng CORS nếu frontend và backend khác domain
 CORS_ALLOW_ALL_ORIGINS = True 
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ]
+}
 
 ROOT_URLCONF = 'hospital.urls'
 
@@ -146,18 +159,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 
-# settings.py
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
-        # Nếu dùng JWT:
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',  # Đặt mặc định yêu cầu đăng nhập
-    ],
-}
+
 # Cấu hình SimpleJWT (Optional, có thể thay đổi giá trị theo nhu cầu)
 from datetime import timedelta
 
@@ -167,3 +169,22 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,  # Có thay thế Refresh Token mỗi khi cấp mới không
     'BLACKLIST_AFTER_ROTATION': True,  # Hủy Refresh Token đã được sử dụng
 }
+
+# Cấu hình chi tiết hơn cho CORS
+CORS_ALLOW_METHODS = [
+    'GET',
+    'POST',
+    'PUT',
+    'DELETE',
+    'OPTIONS',
+]
+
+CORS_ALLOW_HEADERS = [
+    'content-type',
+    'authorization',
+    'x-csrftoken',
+]
+
+
+CORS_ALLOW_CREDENTIALS = True  # Allows sending cookies with requests
+
