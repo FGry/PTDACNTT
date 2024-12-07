@@ -65,12 +65,16 @@ headers = {
 # }
 
 body = {
-    "patient": "phuoc siu cap",
-    "doctor": 'phuoc',
-    "appointment_date": "2024-11-21",
+    "patient": "Nguyen Van A",
+    "doctor_name": "Dr. John Doe",
+    "appointment_date": "2023-12-07",
+    "appointment_time": "15:00:00",
     "status": "Pending",
-    "notes": "Khám tổng quát"
+    "notes": "Initial consultation",
+    "email": "patient@example.com",
+    "soDienThoai": "01234567890"
 }
+
 
 
 # Gửi yêu cầu POST
